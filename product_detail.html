@@ -1,0 +1,93 @@
+{% extends 'store/base.html' %}
+
+{% block main_block %}
+
+<section class="overflow-hidden">
+  <div class=" mx-auto max-w-5xl px-5 py-24">
+    {% if product %}
+      <div class="mx-auto flex flex-wrap items-center lg:w-4/5">
+        <img
+          alt="{{ product.product_name }}"
+          class="h-64 w-full rounded object-cover lg:h-96 lg:w-1/2"
+          src="{{ product.product_pic.url }}"
+        />
+        <div class="mt-6 w-full lg:mt-0 lg:w-1/2 lg:pl-10">
+          <h2 class="text-sm font-semibold tracking-widest text-gray-500">
+            {{ product.brand_object }}
+          </h2>
+          <h1 class="my-4 text-3xl font-semibold text-black">{{ product.product_name }}</h1>
+          <p class="leading-relaxed">{{ product.description }}</p>
+
+          <form method="post" action="{% url 'cart-add' pk=product.id %}" class="mt-4">
+            {% csrf_token %}
+            <div class="mb-5 flex items-center">
+              <span class="mr-3 text-sm font-bold fs-5">Quantity</span>
+              <div class="relative">
+                <select name="variant" class="appearance-none rounded border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-black focus:outline-none focus:ring-4 focus:ring-black">
+                  {% for variant in product_variants %}
+                    <option value="{{ variant.id }}" data-price="{{ variant.price }}" {% if forloop.first %}selected{% endif %}>
+                      {{ variant.product_quantity }} - ₹{{ variant.price }}
+                    </option>
+                  {% endfor %}
+                </select>
+                <span class="pointer-events-none absolute right-0 top-0 flex h-full w-10 items-center justify-center text-center text-gray-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-chevron-down"
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </span>
+              </div>
+            </div>
+            <input type="hidden" name="price" value="0"> <!-- Hidden input to store the price -->
+            <div class="flex items-center justify-between">
+              <button type="submit" class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+                Add to Cart
+              </button>
+            </div>
+          </form>
+
+        </div>
+
+      </div>
+    {% else %}
+      <p class="text-red-500">Product Not Available</p>
+    {% endif %}
+  </div>
+  
+
+  <div class="px-8 py-12 border-t border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+    {% if review %}
+      <div class="space-y-8">
+        {% for r in review %}
+          <div class="flex">
+            <div class="ml-4">
+              <h4 class="text-sm font-bold text-gray-900">{{ r.user_object.username }}</h4>
+              <h6 class="text-sm font-bold text-gray-900">{{ r.rating }}</h6>
+              <div class="mt-1 flex items-center">
+                
+              </div>
+              <p class="mt-2 text-sm text-gray-500">{{ r.comment }}</p>
+              <p class="mt-2 text-xs text-gray-400">{{ r.created_date|date:"F d, Y" }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-500">No reviews yet. Be the first to review this product!</p>
+    {% endif%}
+</div>
+      
+</section>
+
+{% endblock %}
